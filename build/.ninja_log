@@ -1,0 +1,5 @@
+# ninja log v7
+57	523	8122377279003871	CMakeFiles/miniharness.dir/src/conversation.cpp.obj	8836bf434d67e66b
+73	779	8122377279168926	CMakeFiles/miniharness.dir/src/sentinel_scanner.cpp.obj	33bba143d5e76a09
+230	886	8122377280744709	CMakeFiles/test_p2.dir/src/conversation.cpp.obj	9680b4ade5da85b0
+245	939	8122377280887342	CMakeFiles/test_p2.dir/src/sentinel_scanner.cpp.obj	9ed41d5d8c1e1e9e
