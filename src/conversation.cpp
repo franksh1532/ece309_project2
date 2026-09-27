@@ -55,6 +55,39 @@ Conversation& Conversation::operator=(const Conversation& other){
 
 }
 
+// move constructor -----------------------------------------------------
+Conversation::Conversation(Conversation&& other) noexcept: data_(other.data_), size_(other.size_), capacity_(other.capacity_){
+    
+    // leave moved from object in a valid but empty state
+    other.data_ = nullptr;
+    other.size_ = 0;
+    other.capacity_ = 0;
+}
+
+
+// move assignment operator ---------------------------------------------
+Conversation& Conversation::operator=(Conversation&& other) noexcept {
+
+    // if assigning to itself (no work needed)
+    if (this == &other){
+        return *this;
+    }
+
+    // free old array's memory
+    delete[] data_;
+
+    // take ownership of the other array's memory
+    data_ = other.data_;
+    size_ = other.size_;
+    capacity_ = other.capacity_;
+
+    // leave moved from object in a valid but empty state
+    other.data_ = nullptr;
+    other.size_ = 0;
+    other.capacity_ = 0;
+
+    return *this;
+}
 
 
 Conversation::~Conversation() {
