@@ -1,7 +1,11 @@
 #include "core/conversation.h"
-
 #include <stdexcept>
 
+
+Conversation::Conversation() = default;
+
+
+// copy constructor ---------------------------------------------
 Conversation::Conversation(const Conversation& other): data_(nullptr), size_(0), capacity_(other.capacity_){
         
         if (capacity_ == 0){  // if convo has no allocated array, theres nothing to copy
@@ -18,6 +22,39 @@ Conversation::Conversation(const Conversation& other): data_(nullptr), size_(0),
         // record # of valid messages copied
         size_ = other.size_;
     }
+
+
+// copy assignment operator ---------------------------------------------
+Conversation& Conversation::operator=(const Conversation& other){
+
+    // if assignign to itself (no work needed)
+    if (this == &other){
+        return *this;
+    }
+
+    // create new array large enough to hold all messages from the other conversation
+    Message* new_data = nullptr;
+
+    if (other.capacity_ > 0){
+        new_data = new Message[other.capacity_];
+
+        // copy messages
+        for (std::size_t i = 0; i < other.size_; ++i){
+            new_data[i] = other.data_[i];
+        }
+    }
+
+    // free old array and update pointer and capacity
+    delete[] data_;
+
+    data_ = new_data;
+    capacity_ = other.capacity_;
+    size_ = other.size_;
+
+    return *this;
+
+}
+
 
 
 Conversation::~Conversation() {
