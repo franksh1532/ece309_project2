@@ -1,7 +1,7 @@
 {
 	"InstallScripts" : 
 	[
-		"C:/Users/Hailey/Documents/NCSU Fall 2026/ECE 309/ece309_project2/build/cmake_install.cmake"
+		"/mnt/c/Users/Hailey/Documents/NCSU Fall 2026/ECE 309/ece309_project2/build/cmake_install.cmake"
 	],
 	"Parallel" : false
 }

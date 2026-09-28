@@ -27,7 +27,7 @@ Conversation::Conversation(const Conversation& other): data_(nullptr), size_(0),
 // copy assignment operator ---------------------------------------------
 Conversation& Conversation::operator=(const Conversation& other){
 
-    // if assignign to itself (no work needed)
+    // if assigning to itself
     if (this == &other){
         return *this;
     }
