@@ -1,11 +1,4 @@
 // tests/p2/test_p2.cpp
-//
-// YOUR test suite goes here. At least 12 assert-based test cases — see
-// spec §5 for the required categories and the sample test for the
-// expected level of rigor.
-//
-// This file is a stub so the project builds out of the box; replace the
-// body of main() with your own tests.
 
 #include <cassert>
 #include <cstdio>
@@ -39,7 +32,6 @@ class MockInput : public InputSource{
                 eof_ = true;
                 return "";
             }
-
             return lines_[index_++];
         }
 
@@ -109,7 +101,8 @@ void write_transcript(const Conversation& conv, const std::string& path){
 
 
 
-// test 1: empty convo --------------------------------------------------------------
+// test 1: empty conversation
+// verify an empty conversation has no messages and rejects invalid access
 void test_empty_conversation(){
 
     Conversation conv;
@@ -131,7 +124,8 @@ void test_empty_conversation(){
 
 
 
-// test 2: system message ordering ----------------------------------------------------------
+// test 2: system message ordering
+// verify messages remain in system, user, assistant order
 void test_system_message_ordering(){
 
     Conversation conv;
@@ -149,7 +143,8 @@ void test_system_message_ordering(){
 
 
 
-// test 3: copy semantics --------------------------------------------------------------
+// test 3: copy semantics
+// verify copy constructor and copy assignment perform deep copies
 void test_copy_semantics(){
 
     Conversation original;
@@ -161,7 +156,10 @@ void test_copy_semantics(){
     Conversation copy(original);
 
     assert(copy.size() == original.size());
+
+    // deep copy should use a diff backing array
     assert(copy.begin() != original.begin());
+
     assert(copy.at(0).content() == "hello");
     assert(copy.at(1).content() == "hi");
 
@@ -182,7 +180,8 @@ void test_copy_semantics(){
 
 
 
-// test 4: move semantics --------------------------------------------------------------
+// test 4: move semantics
+// verify move constructor and move assignment correctly transfer ownership
 void test_move_semantics(){
 
     Conversation original;
@@ -193,6 +192,7 @@ void test_move_semantics(){
     // move constructor should take the existing ptr
     Conversation moved(std::move(original));
 
+    // move should steal the existing array instead of copying it
     assert(moved.begin() == original_pointer);
     assert(original.begin() == nullptr);
     assert(original.size() == 0);
@@ -219,7 +219,8 @@ void test_move_semantics(){
 
 
 
-// test 5: array growth --------------------------------------------------------------
+// test 5: array growth
+// verify capacity follows the doubling strategy and that messages survive resizing
 void test_growth(){
 
     Conversation conv;
@@ -253,7 +254,8 @@ void test_growth(){
 
 
 
-// test 6: scanner clean text --------------------------------------------------------------
+// test 6: scanner clean text
+// verify normal streamed text is emitted correctly when no sentinel appears
 void test_scanner_clean_text(){
 
     const std::string sentinel = "<|end_conversation|>";
@@ -275,13 +277,14 @@ void test_scanner_clean_text(){
 
 
 
-// test 7: sentinel split at every possible boundary --------------------------------
+// test 7: sentinel split at every possible boundary
+// verify the sentinel is detected at every possible chunk boundary
 void test_scanner_every_split(){
 
     const std::string sentinel = "<|end_conversation|>";
-
     const std::string text = "Goodbye." + sentinel;
 
+    // verify sentinel is found regardless of chunk boundary
     for (std::size_t split = 0; split <= text.size(); ++split){
 
         SentinelScanner scanner(sentinel);
@@ -296,7 +299,8 @@ void test_scanner_every_split(){
 
 
 
-// test 8: false sentinel --------------------------------------------------------------
+// test 8: false sentinel
+// verify similar looking text doesn't falsely trigger the sentinel
 void test_scanner_false_alarm(){
 
     const std::string sentinel = "<|end_conversation|>";
@@ -316,7 +320,8 @@ void test_scanner_false_alarm(){
 
 
 
-// test 9: scanner bounded memory -------------------------------------------------------
+// test 9: scanner bounded memory
+// verify pending_ stays bounded during a large streamed input
 void test_scanner_bounded_memory(){
 
     const std::string sentinel = "<|end_conversation|>";
@@ -324,10 +329,9 @@ void test_scanner_bounded_memory(){
     SentinelScanner scanner(sentinel);
 
     const std::string pattern = "<|end_";
-
-    // ~4 mb one char at a time
     const std::size_t bytes = 4 * 1024 * 1024;
 
+    // pending_ must remain bounded even on a 4 MB stream
     for (std::size_t i = 0; i < bytes; ++i){
 
         char c = pattern[i % pattern.size()];
@@ -346,7 +350,8 @@ void test_scanner_bounded_memory(){
 
 
 
-// test 10: harness turn limit ----------------------------------------------------------
+// test 10: harness turn limit
+// verify the harness stops after the max number of turns is reached
 void test_harness_turn_limit(){
 
     const std::string path = "test_turn_limit.script";
@@ -381,7 +386,8 @@ void test_harness_turn_limit(){
 
 
 
-// test 11: harness stops on sentinel ------------------------------------------------------
+// test 11: harness stops on sentinel
+// verify the harness stops on the sentinel without printing it
 void test_harness_sentinel(){
 
     const std::string path = "test_sentinel.script";
@@ -407,9 +413,9 @@ void test_harness_sentinel(){
     StopReason reason = harness.run(input, output);
 
     assert(reason.kind == StopReason::Kind::Sentinel);
+    
+    // sentinel should stop harness but never be printed
     assert(output.output_.find("Goodbye!") != std::string::npos);
-
-    // sentinel should not be printed
     assert(output.output_.find("<|end_conversation|>") == std::string::npos);
 
     std::remove(path.c_str());
@@ -417,7 +423,8 @@ void test_harness_sentinel(){
 
 
 
-// test 12: transcript round trip --------------------------------------------------------------
+// test 12: transcript round trip
+// verify that a saved transcript can be replayed with the expected contents
 void test_transcript_round_trip(){
 
     const std::string path = "test_transcript.txt";
