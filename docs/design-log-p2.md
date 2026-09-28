@@ -1,7 +1,5 @@
 # Design Log — Project 2
 
-(500–800 words total. See spec §5 for what each section must cover.)
-
 ## Growth factor and amortized cost
 A doubling growth strategy was used for the dynamic array for the `Conversation` class. The conversation begins with `capacity_ = 0`, becoming `capacity_ = 1` when the first message is appended. Whenever `size_ == capacity_` the capacity doubles, which gives the sequence 0 -> 1 -> 2 -> 4 -> 8 -> 16 -> etc.
 When the array is full, `append()` allocates a new `Message` array with the larger capacity, copying the existing messages and deleting the old array. It then updates `data_` and `capacity_`. If there's already unused capacity, the new message is placed directly at `data_[size_]`. Afterwards, `size_` is incremented.
